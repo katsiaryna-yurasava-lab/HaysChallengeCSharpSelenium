@@ -1,6 +1,1 @@
-{
-  "allure": {
-    "directory": "allure-results",
-    "links": {}
-  }
-}
+{"allure":{"directory":"allure-results"}}

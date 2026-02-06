@@ -8,6 +8,8 @@ namespace AutomationProject;
 
 public class CheckoutFlowTests : BaseTest
 {
+    private const int ExpectedCartItemCountAfterSingleAdd = 1;
+
     private IReadOnlyList<string> _productNames = null!;
     private string _selectedProductName = null!;
 
@@ -29,11 +31,11 @@ public class CheckoutFlowTests : BaseTest
     [Test]
     public void Login_Search_AddToCart_Checkout_PlaceOrder_Success()
     {
-        var loginPage = new LoginPage(Driver);
-        var homePage = new HomePage(Driver);
-        var productsPage = new ProductsPage(Driver);
-        var cartPage = new CartPage(Driver);
-        var checkoutPage = new CheckoutPage(Driver);
+        var loginPage = Page<LoginPage>();
+        var homePage = Page<HomePage>();
+        var productsPage = Page<ProductsPage>();
+        var cartPage = Page<CartPage>();
+        var checkoutPage = Page<CheckoutPage>();
 
         // 1. Login using credentials from Playwright
         loginPage.Open();
@@ -52,13 +54,13 @@ public class CheckoutFlowTests : BaseTest
 
         // 5. Add product(s) to the cart
         productsPage.AddFirstProductToCart();
-        var cartModal = new CartModal(Driver);
+        var cartModal = Component<CartModal>();
         Assert.That(cartModal.IsAddedToCartMessageVisible(), Is.True,
             "After adding to cart, modal #cartModal should appear with message 'Your product has been added to cart'.");
         cartModal.ClickViewCart();
 
         // 6. Validate exactly one product in cart and its data matches what was added
-        Assert.That(cartPage.GetCartItemCount(), Is.EqualTo(1),
+        Assert.That(cartPage.GetCartItemCount(), Is.EqualTo(ExpectedCartItemCountAfterSingleAdd),
             "Cart should contain exactly one item.");
         Assert.That(cartPage.GetFirstCartItemProductName(), Does.Contain(_selectedProductName),
             "Cart item description should match the added product: " + _selectedProductName);
