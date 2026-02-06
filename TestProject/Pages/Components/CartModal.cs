@@ -52,14 +52,20 @@ public class CartModal
     }
 
     /// <summary>
-    /// Clicks "View Cart" in the modal. Uses link inside #cartModal and JS click to avoid modal intercepting.
+    /// Clicks "View Cart" in the modal. Waits for modal and link to be visible, then JS click to avoid intercept.
     /// </summary>
     public void ClickViewCart()
     {
         _retryPolicy.Execute(() =>
         {
             var modal = _wait.Until(ExpectedConditions.ElementIsVisible(ModalRoot));
-            var viewCart = modal.FindElement(By.CssSelector("a[href*='view_cart']"));
+
+            var viewCart = _wait.Until(_ =>
+            {
+                var el = modal.FindElement(By.CssSelector("a[href*='view_cart']"));
+                return el.Displayed ? el : null;
+            });
+
             ((IJavaScriptExecutor)_driver).ExecuteScript("arguments[0].click();", viewCart);
         });
     }

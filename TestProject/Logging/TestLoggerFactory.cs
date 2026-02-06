@@ -15,5 +15,7 @@ public static class TestLoggerFactory
 
     public static ILogger CreateLogger<T>() => Factory.CreateLogger<T>();
 
+    public static ILogger CreateLogger(Type type) => Factory.CreateLogger(type);
+
     public static ILogger CreateLogger(string categoryName) => Factory.CreateLogger(categoryName);
 }
