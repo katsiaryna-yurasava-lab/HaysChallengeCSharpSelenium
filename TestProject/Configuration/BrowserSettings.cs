@@ -17,6 +17,9 @@ public class BrowserSettings
     /// <summary>Page load timeout (seconds).</summary>
     public int PageLoadTimeoutSeconds { get; set; } = 30;
 
+    /// <summary>Explicit wait timeout for element visibility etc. (seconds). Used by BasePage WebDriverWait.</summary>
+    public int ExplicitWaitSeconds { get; set; } = 15;
+
     /// <summary>Maximize browser window.</summary>
     public bool WindowMaximize { get; set; } = true;
 }

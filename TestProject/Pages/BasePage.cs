@@ -11,10 +11,11 @@ public abstract class BasePage
     protected readonly IWebDriver Driver;
     protected readonly WebDriverWait Wait;
 
-    protected BasePage(IWebDriver driver, int timeoutSeconds = 15)
+    protected BasePage(IWebDriver driver, int? timeoutSeconds = null)
     {
         Driver = driver;
-        Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutSeconds));
+        var seconds = timeoutSeconds ?? TestConfig.Browser.ExplicitWaitSeconds;
+        Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(seconds));
     }
 
     protected IWebElement WaitAndFind(By locator) =>

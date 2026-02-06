@@ -1,17 +1,18 @@
-using OpenQA.Selenium;
+using AutomationProject.Configuration;
 using AutomationProject.Models;
+using OpenQA.Selenium;
 
 namespace AutomationProject.Pages;
 
 public class CheckoutPage : BasePage
 {
-    private static readonly By PlaceOrderButton = By.CssSelector("a[href*='payment'], button.stripe-button-el, #submit");
+    private static readonly By PlaceOrderButton = By.CssSelector("a[href*='payment']");
     private static readonly By NameOnCard = By.CssSelector("input[data-qa='name-on-card']");
     private static readonly By CardNumber = By.CssSelector("input[data-qa='card-number']");
     private static readonly By Cvc = By.CssSelector("input[data-qa='cvc']");
     private static readonly By ExpiryMonth = By.CssSelector("input[data-qa='expiry-month']");
     private static readonly By ExpiryYear = By.CssSelector("input[data-qa='expiry-year']");
-    private static readonly By PayButton = By.CssSelector("button[data-qa='pay-button'], #submit, input[value='Pay and Confirm Order']");
+    private static readonly By PayButton = By.CssSelector("button[data-qa='pay-button']");
 
     public CheckoutPage(IWebDriver driver) : base(driver) { }
 
@@ -32,28 +33,45 @@ public class CheckoutPage : BasePage
     {
         Wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(NameOnCard));
 
+        var card = TestConfig.PaymentCard;
         WaitVisible(NameOnCard).SendKeys(user.Name);
-        WaitVisible(CardNumber).SendKeys("4111111111111111");
-        WaitVisible(Cvc).SendKeys("123");
-        WaitVisible(ExpiryMonth).SendKeys("12");
-        WaitVisible(ExpiryYear).SendKeys("2030");
+        WaitVisible(CardNumber).SendKeys(card.CardNumber);
+        WaitVisible(Cvc).SendKeys(card.Cvc);
+        WaitVisible(ExpiryMonth).SendKeys(card.ExpiryMonth);
+        WaitVisible(ExpiryYear).SendKeys(card.ExpiryYear);
+        WaitVisible(PayButton).Click();
 
-        var pay = Driver.FindElements(PayButton);
-        if (pay.Count > 0)
-            pay[0].Click();
-        else
-            Driver.FindElement(By.CssSelector("input[value='Pay and Confirm Order'], button#submit")).Click();
     }
 
+    private static readonly By OrderPlacedElement = By.CssSelector("[data-qa='order-placed']");
+    private const string OrderPlacedText = "Order Placed!";
+    private const string OrderConfirmedText = "Congratulations! Your order has been confirmed!";
+
     /// <summary>
-    /// Returns true if order placed confirmation (e.g. "Order Placed!" or "Congratulations! Your order has been confirmed") is visible.
+    /// Returns true if element [data-qa="order-placed"] is visible and contains text "Order Placed!".
     /// </summary>
-    public bool IsOrderPlacedSuccess()
+    public bool IsOrderPlacedElementVisible()
     {
         try
         {
-            var success = By.XPath("//*[contains(text(), 'Order Placed') or contains(text(), 'order has been confirmed') or contains(text(), 'Congratulations')]");
-            return IsVisible(success);
+            var el = WaitVisible(OrderPlacedElement);
+            return el.Text.Trim().Contains(OrderPlacedText, StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Returns true if the page contains the text "Congratulations! Your order has been confirmed!".
+    /// </summary>
+    public bool IsOrderConfirmedTextVisible()
+    {
+        try
+        {
+            var body = Driver.FindElement(By.TagName("body"));
+            return body.Text.Contains(OrderConfirmedText, StringComparison.OrdinalIgnoreCase);
         }
         catch
         {

@@ -13,7 +13,7 @@ public class CartModal
 {
     private static readonly By ModalRoot = By.Id("cartModal");
     private const string AddedToCartMessage = "Your product has been added to cart";
-    private static readonly By ViewCartLink = By.CssSelector("a[href*='view_cart']");
+    private static readonly By ViewCartLink = By.CssSelector("a[href*='view_cart'] u");
 
     private readonly RetryPolicy _retryPolicy = Policy
         .Handle<StaleElementReferenceException>()

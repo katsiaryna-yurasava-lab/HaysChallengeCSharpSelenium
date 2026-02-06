@@ -52,4 +52,16 @@ public static class TestConfig
             return section.Get<WebAppSettings>() ?? new WebAppSettings();
         }
     }
+
+    /// <summary>
+    /// Payment card data for checkout. Section PaymentCard in json; env: PaymentCard__CardNumber, etc.
+    /// </summary>
+    public static PaymentCardSettings PaymentCard
+    {
+        get
+        {
+            var section = Configuration.GetSection("PaymentCard");
+            return section.Get<PaymentCardSettings>() ?? new PaymentCardSettings();
+        }
+    }
 }

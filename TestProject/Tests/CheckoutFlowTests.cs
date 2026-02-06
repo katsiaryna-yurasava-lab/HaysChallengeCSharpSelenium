@@ -1,8 +1,13 @@
 using AutomationProject.Browser;
+using AutomationProject.Configuration;
 using AutomationProject.Data;
+using AutomationProject.Helpers;
+using AutomationProject.Logging;
 using AutomationProject.Models;
 using AutomationProject.Pages;
 using AutomationProject.Pages.Components;
+using AutomationProject.Services;
+using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 
 namespace AutomationProject;
@@ -13,16 +18,18 @@ public class CheckoutFlowTests
     private RegisteredUserData _user = null!;
     private IReadOnlyList<string> _productNames = null!;
     private string _selectedProductName = null!;
+    private ILogger _logger = null!;
 
     [SetUp]
     public void Setup()
     {
+        _logger = TestLoggerFactory.CreateLogger<CheckoutFlowTests>();
         var factory = new WebDriverFactory();
         _driver = factory.Create();
         _user = CredentialsReader.Load();
 
-        // GET /products and collect all product names from HTML (div.single-products > div.productinfo > p)
-        _productNames = ProductsApi.GetProductNamesFromProductsPage();
+        var baseUrl = TestConfig.WebApp.BaseUrl.TrimEnd('/');
+        _productNames = ProductService.GetProductNamesAsync(baseUrl).GetAwaiter().GetResult();
         // Pick a random product for the test
         _selectedProductName = _productNames.Count > 0
             ? _productNames[Random.Shared.Next(_productNames.Count)]
@@ -30,9 +37,18 @@ public class CheckoutFlowTests
     }
 
     [TearDown]
-    public void TearDown()
+    public async Task TearDownAsync()
     {
-        _driver?.Dispose();
+        try
+        {
+            var baseUrl = TestConfig.WebApp.BaseUrl.TrimEnd('/');
+            var cookieContainer = WebDriverCookieHelper.FromDriver(_driver, baseUrl, _logger);
+            await CartService.ClearCartAsync(baseUrl, cookieContainer, _logger);
+        }
+        finally
+        {
+            _driver?.Dispose();
+        }
     }
 
     [Test]
@@ -74,7 +90,9 @@ public class CheckoutFlowTests
         checkoutPage.PlaceOrder(_user);
 
         // 8. Validate order placed confirmation
-        Assert.That(checkoutPage.IsOrderPlacedSuccess(), Is.True,
-            "Order placed confirmation should be visible.");
+        Assert.That(checkoutPage.IsOrderPlacedElementVisible(), Is.True,
+            "Element [data-qa='order-placed'] with text 'Order Placed!' should be visible.");
+        Assert.That(checkoutPage.IsOrderConfirmedTextVisible(), Is.True,
+            "Page should contain text 'Congratulations! Your order has been confirmed!'.");
     }
 }

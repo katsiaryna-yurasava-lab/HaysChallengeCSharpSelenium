@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AutomationProject.Configuration;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -37,9 +38,30 @@ public class WebDriverFactory : IWebDriverFactory
         options.AddArgument("--no-sandbox");
         options.AddArgument("--disable-dev-shm-usage");
         options.AddArgument("--disable-gpu");
+        options.AddArgument("--disable-popup-blocking");
+        options.AddArgument("--disable-notifications");
+        options.AddArgument("--disable-extensions");
+
+        options.AddUserProfilePreference("profile.default_content_setting_values.ads", 2);
+        options.AddUserProfilePreference("profile.default_content_setting_values.popups", 2);
+
         if (settings.Headless)
             options.AddArgument("--headless=new");
-        return new ChromeDriver(options);
+
+        var driver = new ChromeDriver(options);
+
+        driver.ExecuteCdpCommand("Network.enable", new Dictionary<string, object>());
+        driver.ExecuteCdpCommand("Network.setBlockedURLs", new Dictionary<string, object>
+        {
+            ["urls"] = new[]
+            {
+                "*doubleclick.net*",
+                "*googlesyndication.com*",
+                "*googleadservices.com*"
+            }
+        });
+
+        return driver;
     }
 
     private static void ConfigureDriver(IWebDriver driver, BrowserSettings settings)

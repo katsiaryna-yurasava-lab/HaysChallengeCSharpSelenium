@@ -4,7 +4,7 @@ namespace AutomationProject.Pages;
 
 public class CartPage : BasePage
 {
-    private static readonly By ProceedToCheckout = By.CssSelector("a.checkout_session");
+    private static readonly By ProceedToCheckout = By.CssSelector("a.check_out");
 
     public CartPage(IWebDriver driver) : base(driver) { }
 
