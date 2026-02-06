@@ -1,4 +1,5 @@
 using System.Net;
+using AutomationProject.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 
@@ -9,6 +10,13 @@ namespace AutomationProject.Helpers;
 /// </summary>
 public static class WebDriverCookieHelper
 {
+    /// <summary>Builds CookieContainer from driver cookies (BaseUrl from config).</summary>
+    public static CookieContainer FromDriver(IWebDriver driver, ILogger? logger = null)
+    {
+        var baseUrl = TestConfig.WebApp.BaseUrl.TrimEnd('/');
+        return FromDriver(driver, baseUrl, logger);
+    }
+
     public static CookieContainer FromDriver(IWebDriver driver, string baseUrl, ILogger? logger = null)
     {
         var uri = new Uri(baseUrl.TrimEnd('/') + "/");

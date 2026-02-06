@@ -64,4 +64,16 @@ public static class TestConfig
             return section.Get<PaymentCardSettings>() ?? new PaymentCardSettings();
         }
     }
+
+    /// <summary>
+    /// Retry logic (Polly). Section Retry in json; env: Retry__RetryCount, Retry__SleepDurationMilliseconds, etc.
+    /// </summary>
+    public static RetrySettings Retry
+    {
+        get
+        {
+            var section = Configuration.GetSection("Retry");
+            return section.Get<RetrySettings>() ?? new RetrySettings();
+        }
+    }
 }

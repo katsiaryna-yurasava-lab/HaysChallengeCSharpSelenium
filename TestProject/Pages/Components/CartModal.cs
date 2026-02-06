@@ -1,3 +1,4 @@
+using AutomationProject.Configuration;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using Polly;
@@ -13,24 +14,27 @@ public class CartModal
 {
     private static readonly By ModalRoot = By.Id("cartModal");
     private const string AddedToCartMessage = "Your product has been added to cart";
-    private static readonly By ViewCartLink = By.CssSelector("a[href*='view_cart'] u");
+    private static readonly By ViewCartLink = By.CssSelector("a[href*='view_cart']");
 
-    private readonly RetryPolicy _retryPolicy = Policy
-        .Handle<StaleElementReferenceException>()
-        .Or<ElementClickInterceptedException>()
-        .Or<WebDriverException>()
-        .WaitAndRetry(
-            retryCount: 3,
-            sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(500)
-        );
-
+    private readonly RetryPolicy _retryPolicy;
     private readonly IWebDriver _driver;
     private readonly WebDriverWait _wait;
 
-    public CartModal(IWebDriver driver, int timeoutSeconds = 15)
+    public CartModal(IWebDriver driver, int? timeoutSeconds = null)
     {
         _driver = driver;
-        _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutSeconds));
+        var seconds = timeoutSeconds ?? TestConfig.Browser.ExplicitWaitSeconds;
+        _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(seconds));
+
+        var retry = TestConfig.Retry;
+        _retryPolicy = Policy
+            .Handle<StaleElementReferenceException>()
+            .Or<ElementClickInterceptedException>()
+            .Or<WebDriverException>()
+            .WaitAndRetry(
+                retryCount: retry.RetryCount,
+                sleepDurationProvider: _ => TimeSpan.FromMilliseconds(retry.SleepDurationMilliseconds)
+            );
     }
 
     /// <summary>

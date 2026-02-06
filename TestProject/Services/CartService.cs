@@ -1,4 +1,5 @@
 using System.Net;
+using AutomationProject.Configuration;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 
@@ -10,6 +11,18 @@ namespace AutomationProject.Services;
 public static class CartService
 {
     private const string UserAgent = "Mozilla/5.0 (compatible; Selenium-Test)";
+
+    /// <summary>
+    /// Clears the cart (BaseUrl from config): fetches cart page, finds all product row ids, then deletes each item.
+    /// </summary>
+    public static async Task ClearCartAsync(
+        CookieContainer cookieContainer,
+        ILogger? logger = null,
+        CancellationToken cancellationToken = default)
+    {
+        var baseUrl = TestConfig.WebApp.BaseUrl.TrimEnd('/');
+        await ClearCartAsync(baseUrl, cookieContainer, logger, cancellationToken);
+    }
 
     /// <summary>
     /// Clears the cart: fetches cart page, finds all product row ids, then deletes each item.

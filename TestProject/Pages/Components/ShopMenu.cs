@@ -1,3 +1,4 @@
+using AutomationProject.Configuration;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
@@ -15,10 +16,11 @@ public class ShopMenu
     private readonly IWebDriver _driver;
     private readonly WebDriverWait _wait;
 
-    public ShopMenu(IWebDriver driver, int timeoutSeconds = 15)
+    public ShopMenu(IWebDriver driver, int? timeoutSeconds = null)
     {
         _driver = driver;
-        _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutSeconds));
+        var seconds = timeoutSeconds ?? TestConfig.Browser.ExplicitWaitSeconds;
+        _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(seconds));
     }
 
     /// <summary>

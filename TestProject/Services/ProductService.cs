@@ -1,3 +1,4 @@
+using AutomationProject.Configuration;
 using HtmlAgilityPack;
 
 namespace AutomationProject.Services;
@@ -8,6 +9,15 @@ namespace AutomationProject.Services;
 public static class ProductService
 {
     private const string UserAgent = "Mozilla/5.0 (compatible; Selenium-Test)";
+
+    /// <summary>
+    /// GET products page (BaseUrl from config), parses HTML, returns product names.
+    /// </summary>
+    public static async Task<IReadOnlyList<string>> GetProductNamesAsync(CancellationToken cancellationToken = default)
+    {
+        var baseUrl = TestConfig.WebApp.BaseUrl.TrimEnd('/');
+        return await GetProductNamesAsync(baseUrl, cancellationToken);
+    }
 
     /// <summary>
     /// GET baseUrl/products, parses HTML for .single-products .productinfo p, returns product names.

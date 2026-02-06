@@ -28,12 +28,14 @@ public class CheckoutFlowTests
         _driver = factory.Create();
         _user = CredentialsReader.Load();
 
-        var baseUrl = TestConfig.WebApp.BaseUrl.TrimEnd('/');
-        _productNames = ProductService.GetProductNamesAsync(baseUrl).GetAwaiter().GetResult();
-        // Pick a random product for the test
-        _selectedProductName = _productNames.Count > 0
-            ? _productNames[Random.Shared.Next(_productNames.Count)]
-            : "top";
+        _productNames = ProductService.GetProductNamesAsync().GetAwaiter().GetResult();
+
+        if (!_productNames.Any())
+            throw new InvalidOperationException("No products returned from API.");
+
+        _selectedProductName =
+            _productNames[Random.Shared.Next(_productNames.Count)];
+
     }
 
     [TearDown]
@@ -41,9 +43,8 @@ public class CheckoutFlowTests
     {
         try
         {
-            var baseUrl = TestConfig.WebApp.BaseUrl.TrimEnd('/');
-            var cookieContainer = WebDriverCookieHelper.FromDriver(_driver, baseUrl, _logger);
-            await CartService.ClearCartAsync(baseUrl, cookieContainer, _logger);
+            var cookieContainer = WebDriverCookieHelper.FromDriver(_driver, _logger);
+            await CartService.ClearCartAsync(cookieContainer, _logger);
         }
         finally
         {
@@ -56,7 +57,7 @@ public class CheckoutFlowTests
     {
         var loginPage = new LoginPage(_driver);
         var homePage = new HomePage(_driver);
-        var searchPage = new SearchPage(_driver);
+        var productsPage = new ProductsPage(_driver);
         var cartPage = new CartPage(_driver);
         var checkoutPage = new CheckoutPage(_driver);
 
@@ -73,17 +74,20 @@ public class CheckoutFlowTests
         shopMenu.ClickProducts();
 
         // 4. Search for a product
-        searchPage.Search(_selectedProductName);
+        productsPage.Search(_selectedProductName);
 
         // 5. Add product(s) to the cart
-        searchPage.AddFirstProductToCart();
+        productsPage.AddFirstProductToCart();
         var cartModal = new CartModal(_driver);
         Assert.That(cartModal.IsAddedToCartMessageVisible(), Is.True,
             "After adding to cart, modal #cartModal should appear with message 'Your product has been added to cart'.");
         cartModal.ClickViewCart();
 
-        // 6. Validate product added to cart and proceed to checkout
-        Assert.That(cartPage.HasItems(), Is.True, "Cart should contain at least one item.");
+        // 6. Validate exactly one product in cart and its data matches what was added
+        Assert.That(cartPage.GetCartItemCount(), Is.EqualTo(1),
+            "Cart should contain exactly one item.");
+        Assert.That(cartPage.GetFirstCartItemProductName(), Does.Contain(_selectedProductName),
+            "Cart item description should match the added product: " + _selectedProductName);
         cartPage.ProceedToCheckoutClick();
 
         // 7. Place the order successfully
