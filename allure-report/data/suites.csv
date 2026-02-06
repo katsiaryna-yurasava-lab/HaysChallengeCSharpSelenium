@@ -1,0 +1,2 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","22090","Login_Search_AddToCart_Checkout_PlaceOrder_Success","AutomationProject","2026-02-06","passed","2026-02-06","CheckoutFlowTests","AutomationProject","CheckoutFlowTests","Login_Search_AddToCart_Checkout_PlaceOrder_Success"

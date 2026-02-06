@@ -1,3 +1,4 @@
+using Allure.Net.Commons;
 using AutomationProject.Browser;
 using AutomationProject.Helpers;
 using AutomationProject.Pages;
@@ -37,42 +38,58 @@ public class CheckoutFlowTests : BaseTest
         var cartPage = Page<CartPage>();
         var checkoutPage = Page<CheckoutPage>();
 
-        // 1. Login using credentials from Playwright
-        loginPage.Open();
-        loginPage.Login(User.Email, User.Password);
+        AllureApi.Step("1. Login using credentials from registered user", () =>
+        {
+            loginPage.Open();
+            loginPage.Login(User.Email, User.Password);
+        });
 
-        // 2. Validate login success
-        Assert.That(homePage.IsLoggedInAs(User.FirstName, User.LastName), Is.True,
-            "Login failed: 'Logged in as' text with user name should be visible.");
+        AllureApi.Step("2. Validate login success", () =>
+        {
+            Assert.That(homePage.IsLoggedInAs(User.FirstName, User.LastName), Is.True,
+                "Login failed: 'Logged in as' text with user name should be visible.");
+        });
 
-        // 3. Navigate to Products page via top menu
-        var shopMenu = new ShopMenu(Driver);
-        shopMenu.ClickProducts();
+        AllureApi.Step("3. Navigate to Products page via top menu", () =>
+        {
+            var shopMenu = new ShopMenu(Driver);
+            shopMenu.ClickProducts();
+        });
 
-        // 4. Search for a product
-        productsPage.Search(_selectedProductName);
+        AllureApi.Step("4. Search for a product", () =>
+        {
+            productsPage.Search(_selectedProductName);
+        });
 
-        // 5. Add product(s) to the cart
-        productsPage.AddFirstProductToCart();
-        var cartModal = Component<CartModal>();
-        Assert.That(cartModal.IsAddedToCartMessageVisible(), Is.True,
-            "After adding to cart, modal #cartModal should appear with message 'Your product has been added to cart'.");
-        cartModal.ClickViewCart();
+        AllureApi.Step("5. Add product(s) to the cart", () =>
+        {
+            productsPage.AddFirstProductToCart();
+            var cartModal = Component<CartModal>();
+            Assert.That(cartModal.IsAddedToCartMessageVisible(), Is.True,
+                "After adding to cart, modal #cartModal should appear with message 'Your product has been added to cart'.");
+            cartModal.ClickViewCart();
+        });
 
-        // 6. Validate exactly one product in cart and its data matches what was added
-        Assert.That(cartPage.GetCartItemCount(), Is.EqualTo(ExpectedCartItemCountAfterSingleAdd),
-            "Cart should contain exactly one item.");
-        Assert.That(cartPage.GetFirstCartItemProductName(), Does.Contain(_selectedProductName),
-            "Cart item description should match the added product: " + _selectedProductName);
-        cartPage.ProceedToCheckoutClick();
+        AllureApi.Step("6. Validate cart and proceed to checkout", () =>
+        {
+            Assert.That(cartPage.GetCartItemCount(), Is.EqualTo(ExpectedCartItemCountAfterSingleAdd),
+                "Cart should contain exactly one item.");
+            Assert.That(cartPage.GetFirstCartItemProductName(), Does.Contain(_selectedProductName),
+                "Cart item description should match the added product: " + _selectedProductName);
+            cartPage.ProceedToCheckoutClick();
+        });
 
-        // 7. Place the order successfully
-        checkoutPage.PlaceOrder(User);
+        AllureApi.Step("7. Place the order successfully", () =>
+        {
+            checkoutPage.PlaceOrder(User);
+        });
 
-        // 8. Validate order placed confirmation
-        Assert.That(checkoutPage.IsOrderPlacedElementVisible(), Is.True,
-            "Element [data-qa='order-placed'] with text 'Order Placed!' should be visible.");
-        Assert.That(checkoutPage.IsOrderConfirmedTextVisible(), Is.True,
-            "Page should contain text 'Congratulations! Your order has been confirmed!'.");
+        AllureApi.Step("8. Validate order placed confirmation", () =>
+        {
+            Assert.That(checkoutPage.IsOrderPlacedElementVisible(), Is.True,
+                "Element [data-qa='order-placed'] with text 'Order Placed!' should be visible.");
+            Assert.That(checkoutPage.IsOrderConfirmedTextVisible(), Is.True,
+                "Page should contain text 'Congratulations! Your order has been confirmed!'.");
+        });
     }
 }
