@@ -3,12 +3,12 @@ using OpenQA.Selenium;
 namespace AutomationProject.Browser;
 
 /// <summary>
-/// Фабрика создания экземпляра IWebDriver. Тип браузера и опции задаются конфигурацией.
+/// Factory for creating IWebDriver instances. Browser type and options are set via configuration.
 /// </summary>
 public interface IWebDriverFactory
 {
     /// <summary>
-    /// Создаёт и настраивает драйвер согласно конфигурации (Browser, Headless, таймауты и т.д.).
+    /// Creates and configures the driver according to configuration (Browser, Headless, timeouts, etc.).
     /// </summary>
     IWebDriver Create();
 }

@@ -21,9 +21,9 @@ public class CheckoutFlowTests
         _driver = factory.Create();
         _user = CredentialsReader.Load();
 
-        // GET /products и сбор всех наименований из HTML (div.single-products > div.productinfo > p)
+        // GET /products and collect all product names from HTML (div.single-products > div.productinfo > p)
         _productNames = ProductsApi.GetProductNamesFromProductsPage();
-        // Выбор случайного продукта для теста
+        // Pick a random product for the test
         _selectedProductName = _productNames.Count > 0
             ? _productNames[Random.Shared.Next(_productNames.Count)]
             : "top";
@@ -52,24 +52,28 @@ public class CheckoutFlowTests
         Assert.That(homePage.IsLoggedInAs(_user.FirstName, _user.LastName), Is.True,
             "Login failed: 'Logged in as' text with user name should be visible.");
 
-        // 3. Search for a product
+        // 3. Navigate to Products page via top menu
+        var shopMenu = new ShopMenu(_driver);
+        shopMenu.ClickProducts();
+
+        // 4. Search for a product
         searchPage.Search(_selectedProductName);
 
-        // 4. Add product(s) to the cart
+        // 5. Add product(s) to the cart
         searchPage.AddFirstProductToCart();
         var cartModal = new CartModal(_driver);
         Assert.That(cartModal.IsAddedToCartMessageVisible(), Is.True,
-            "После добавления в корзину должно появиться модальное окно #cartModal с текстом 'Your product has been added to cart'.");
+            "After adding to cart, modal #cartModal should appear with message 'Your product has been added to cart'.");
         cartModal.ClickViewCart();
 
-        // 5. Validate product added to cart and proceed to checkout
+        // 6. Validate product added to cart and proceed to checkout
         Assert.That(cartPage.HasItems(), Is.True, "Cart should contain at least one item.");
         cartPage.ProceedToCheckoutClick();
 
-        // 6. Place the order successfully
+        // 7. Place the order successfully
         checkoutPage.PlaceOrder(_user);
 
-        // 7. Validate order placed confirmation
+        // 8. Validate order placed confirmation
         Assert.That(checkoutPage.IsOrderPlacedSuccess(), Is.True,
             "Order placed confirmation should be visible.");
     }

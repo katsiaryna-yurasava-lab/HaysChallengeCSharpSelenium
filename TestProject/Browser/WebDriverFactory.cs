@@ -5,8 +5,8 @@ using OpenQA.Selenium.Chrome;
 namespace AutomationProject.Browser;
 
 /// <summary>
-/// Создаёт IWebDriver на основе TestConfig.Browser (Chrome, Firefox, Edge).
-/// Для Firefox добавьте Selenium.WebDriver.GeckoDriver, для Edge — Selenium.WebDriver.EdgeDriver.
+/// Creates IWebDriver based on TestConfig.Browser (Chrome, Firefox, Edge).
+/// For Firefox add Selenium.WebDriver.GeckoDriver, for Edge add Selenium.WebDriver.EdgeDriver.
 /// </summary>
 public class WebDriverFactory : IWebDriverFactory
 {
@@ -24,10 +24,10 @@ public class WebDriverFactory : IWebDriverFactory
 
         return browser.Equals("Firefox", StringComparison.OrdinalIgnoreCase)
             ? throw new NotSupportedException(
-                "Firefox: добавьте пакет Selenium.WebDriver.GeckoDriver и реализуйте создание FirefoxDriver в WebDriverFactory.")
+                "Firefox: add Selenium.WebDriver.GeckoDriver package and implement FirefoxDriver creation in WebDriverFactory.")
             : browser.Equals("Edge", StringComparison.OrdinalIgnoreCase)
                 ? throw new NotSupportedException(
-                    "Edge: добавьте пакет Selenium.WebDriver.EdgeDriver и реализуйте создание EdgeDriver в WebDriverFactory.")
+                    "Edge: add Selenium.WebDriver.EdgeDriver package and implement EdgeDriver creation in WebDriverFactory.")
                 : CreateChromeDriver(settings);
     }
 

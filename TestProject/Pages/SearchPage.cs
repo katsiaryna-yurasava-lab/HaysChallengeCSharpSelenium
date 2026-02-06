@@ -27,7 +27,7 @@ public class SearchPage : BasePage
     }
 
     /// <summary>
-    /// Переход в корзину: клик "View Cart" в модалке или по URL, если модалка недоступна.
+    /// Navigate to cart: click "View Cart" in the modal or go by URL if modal is not available.
     /// </summary>
     public void ViewCart()
     {

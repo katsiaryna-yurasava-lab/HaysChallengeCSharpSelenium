@@ -1,22 +1,22 @@
 namespace AutomationProject.Configuration;
 
 /// <summary>
-/// Настройки браузера для тестов. Загружаются из appsettings.json и переменных окружения.
+/// Browser settings for tests. Loaded from appsettings.json and environment variables.
 /// </summary>
 public class BrowserSettings
 {
-    /// <summary>Тип браузера: Chrome, Firefox, Edge.</summary>
+    /// <summary>Browser type: Chrome, Firefox, Edge.</summary>
     public string Browser { get; set; } = "Chrome";
 
-    /// <summary>Запуск в headless-режиме.</summary>
+    /// <summary>Run in headless mode.</summary>
     public bool Headless { get; set; }
 
-    /// <summary>Таймаут неявного ожидания (секунды).</summary>
+    /// <summary>Implicit wait timeout (seconds).</summary>
     public int ImplicitWaitSeconds { get; set; } = 5;
 
-    /// <summary>Таймаут загрузки страницы (секунды).</summary>
+    /// <summary>Page load timeout (seconds).</summary>
     public int PageLoadTimeoutSeconds { get; set; } = 30;
 
-    /// <summary>Разворачивать окно на весь экран.</summary>
+    /// <summary>Maximize browser window.</summary>
     public bool WindowMaximize { get; set; } = true;
 }

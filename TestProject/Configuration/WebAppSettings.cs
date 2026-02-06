@@ -1,10 +1,10 @@
 namespace AutomationProject.Configuration;
 
 /// <summary>
-/// Настройки тестируемого веб-приложения.
+/// Settings for the web application under test.
 /// </summary>
 public class WebAppSettings
 {
-    /// <summary>Базовый URL приложения (без завершающего слэша).</summary>
+    /// <summary>Base URL of the application (no trailing slash).</summary>
     public string BaseUrl { get; set; } = "https://automationexercise.com";
 }

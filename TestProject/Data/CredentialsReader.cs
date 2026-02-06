@@ -6,7 +6,7 @@ namespace AutomationProject.Data;
 
 /// <summary>
 /// Reads registered user credentials from the shared file created by Playwright (Task 1).
-/// Path задаётся в конфигурации: секция RegisteredUserFile в appsettings.json.
+/// Path is set in configuration: RegisteredUserFile section in appsettings.json.
 /// </summary>
 public static class CredentialsReader
 {

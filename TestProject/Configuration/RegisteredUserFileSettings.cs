@@ -1,16 +1,16 @@
 namespace AutomationProject.Configuration;
 
 /// <summary>
-/// Настройки пути к файлу с данными зарегистрированного пользователя (созданного Playwright).
+/// Settings for the path to the registered user data file (created by Playwright).
 /// </summary>
 public class RegisteredUserFileSettings
 {
-    /// <summary>Имя папки проекта с Playwright (на уровне выше текущего проекта).</summary>
+    /// <summary>Name of the Playwright project folder (one level above the current project).</summary>
     public string RelativePathFromSolution { get; set; } = "hays-challenge-playwright";
 
-    /// <summary>Папка с данными внутри проекта Playwright.</summary>
+    /// <summary>Data folder inside the Playwright project.</summary>
     public string DataFolder { get; set; } = "data";
 
-    /// <summary>Имя файла с данными пользователя.</summary>
+    /// <summary>Name of the user data file.</summary>
     public string FileName { get; set; } = "registered-user.json";
 }

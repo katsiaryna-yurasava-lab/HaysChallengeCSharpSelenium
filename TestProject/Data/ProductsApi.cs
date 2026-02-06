@@ -4,13 +4,13 @@ using HtmlAgilityPack;
 namespace AutomationProject.Data;
 
 /// <summary>
-/// Загружает список наименований продуктов со страницы /products через GET-запрос и парсинг HTML.
-/// Структура: div.single-products > div.productinfo.text-center > p (текст — название продукта).
+/// Loads product names from /products page via GET request and HTML parsing.
+/// Structure: div.single-products > div.productinfo.text-center > p (text is the product name).
 /// </summary>
 public static class ProductsApi
 {
     /// <summary>
-    /// Выполняет GET на BaseUrl/products и извлекает все названия продуктов из блоков .single-products .productinfo p.
+    /// Performs GET on BaseUrl/products and extracts all product names from .single-products .productinfo p blocks.
     /// </summary>
     public static IReadOnlyList<string> GetProductNamesFromProductsPage()
     {

@@ -1,17 +1,28 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using Polly;
+using Polly.Retry;
 using SeleniumExtras.WaitHelpers;
 
 namespace AutomationProject.Pages.Components;
 
 /// <summary>
-/// Модальное окно корзины (id="cartModal"), появляется после добавления товара в корзину.
+/// Cart modal (id="cartModal"), shown after adding a product to cart.
 /// </summary>
 public class CartModal
 {
     private static readonly By ModalRoot = By.Id("cartModal");
     private const string AddedToCartMessage = "Your product has been added to cart";
     private static readonly By ViewCartLink = By.CssSelector("a[href*='view_cart']");
+
+    private readonly RetryPolicy _retryPolicy = Policy
+        .Handle<StaleElementReferenceException>()
+        .Or<ElementClickInterceptedException>()
+        .Or<WebDriverException>()
+        .WaitAndRetry(
+            retryCount: 3,
+            sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(500)
+        );
 
     private readonly IWebDriver _driver;
     private readonly WebDriverWait _wait;
@@ -23,7 +34,7 @@ public class CartModal
     }
 
     /// <summary>
-    /// Проверяет, что модальное окно видимо и содержит текст "Your product has been added to cart".
+    /// Checks that the modal is visible and contains the text "Your product has been added to cart".
     /// </summary>
     public bool IsAddedToCartMessageVisible()
     {
@@ -39,11 +50,15 @@ public class CartModal
     }
 
     /// <summary>
-    /// Нажимает "View Cart" в модальном окне.
+    /// Clicks "View Cart" in the modal. Retries on failure (e.g. stale element, not clickable).
     /// </summary>
     public void ClickViewCart()
     {
-        var viewCart = _wait.Until(ExpectedConditions.ElementToBeClickable(ViewCartLink));
-        viewCart.Click();
+        _retryPolicy.Execute(() =>
+        {
+            var viewCart = _wait.Until(
+                ExpectedConditions.ElementToBeClickable(ViewCartLink));
+            viewCart.Click();
+        });
     }
 }

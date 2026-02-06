@@ -3,8 +3,8 @@ using Microsoft.Extensions.Configuration;
 namespace AutomationProject.Configuration;
 
 /// <summary>
-/// Загрузка конфигурации тестов из appsettings.json и переменных окружения.
-/// Переменные окружения: Browser, Headless, ImplicitWaitSeconds и т.д. (переопределяют json).
+/// Loads test configuration from appsettings.json and environment variables.
+/// Environment variables (e.g. Browser, Headless, ImplicitWaitSeconds) override json.
 /// </summary>
 public static class TestConfig
 {
@@ -18,7 +18,7 @@ public static class TestConfig
             .Build();
 
     /// <summary>
-    /// Настройки браузера. Переменные окружения BrowserSettings__Browser, BrowserSettings__Headless и т.д. переопределяют json.
+    /// Browser settings. Env: BrowserSettings__Browser, BrowserSettings__Headless, etc. override json.
     /// </summary>
     public static BrowserSettings Browser
     {
@@ -30,7 +30,7 @@ public static class TestConfig
     }
 
     /// <summary>
-    /// Путь к файлу с данными пользователя. Секция RegisteredUserFile в json; env: RegisteredUserFile__RelativePathFromSolution и т.д.
+    /// Path to registered user data file. Section RegisteredUserFile in json; env: RegisteredUserFile__RelativePathFromSolution, etc.
     /// </summary>
     public static RegisteredUserFileSettings RegisteredUserFile
     {
@@ -42,7 +42,7 @@ public static class TestConfig
     }
 
     /// <summary>
-    /// Настройки веб-приложения. Секция WebApp в json; env: WebApp__BaseUrl и т.д.
+    /// Web application settings. Section WebApp in json; env: WebApp__BaseUrl, etc.
     /// </summary>
     public static WebAppSettings WebApp
     {
