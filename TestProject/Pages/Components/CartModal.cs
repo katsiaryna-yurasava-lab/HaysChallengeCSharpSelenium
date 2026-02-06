@@ -14,8 +14,6 @@ public class CartModal
 {
     private static readonly By ModalRoot = By.Id("cartModal");
     private const string AddedToCartMessage = "Your product has been added to cart";
-    private static readonly By ViewCartLink = By.CssSelector("a[href*='view_cart']");
-
     private readonly RetryPolicy _retryPolicy;
     private readonly IWebDriver _driver;
     private readonly WebDriverWait _wait;
@@ -54,15 +52,15 @@ public class CartModal
     }
 
     /// <summary>
-    /// Clicks "View Cart" in the modal. Retries on failure (e.g. stale element, not clickable).
+    /// Clicks "View Cart" in the modal. Uses link inside #cartModal and JS click to avoid modal intercepting.
     /// </summary>
     public void ClickViewCart()
     {
         _retryPolicy.Execute(() =>
         {
-            var viewCart = _wait.Until(
-                ExpectedConditions.ElementToBeClickable(ViewCartLink));
-            viewCart.Click();
+            var modal = _wait.Until(ExpectedConditions.ElementIsVisible(ModalRoot));
+            var viewCart = modal.FindElement(By.CssSelector("a[href*='view_cart']"));
+            ((IJavaScriptExecutor)_driver).ExecuteScript("arguments[0].click();", viewCart);
         });
     }
 }
